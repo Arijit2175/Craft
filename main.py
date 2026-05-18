@@ -7,7 +7,6 @@ from scene import Scene
 from player import Player
 from textures import Textures
 
-
 class VoxelEngine:
     def __init__(self):
         pg.init()

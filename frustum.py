@@ -1,6 +1,5 @@
 from settings import *
 
-
 class Frustum:
     def __init__(self, camera):
         self.cam: Camera = camera
