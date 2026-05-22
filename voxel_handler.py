@@ -7,7 +7,6 @@ class VoxelHandler:
         self.app = world.app
         self.chunks = world.chunks
 
-        # ray casting result
         self.chunk = None
         self.voxel_id = None
         self.voxel_index = None
@@ -15,21 +14,18 @@ class VoxelHandler:
         self.voxel_world_pos = None
         self.voxel_normal = None
 
-        self.interaction_mode = 0  # 0: remove voxel   1: add voxel
+        self.interaction_mode = 0  
         self.new_voxel_id = DIRT
 
     def add_voxel(self):
         if self.voxel_id:
-            # check voxel id along normal
             result = self.get_voxel_id(self.voxel_world_pos + self.voxel_normal)
 
-            # is the new place empty?
             if not result[0]:
                 _, voxel_index, _, chunk = result
                 chunk.voxels[voxel_index] = self.new_voxel_id
                 chunk.mesh.rebuild()
 
-                # was it an empty chunk
                 if chunk.is_empty:
                     chunk.is_empty = False
 
@@ -77,9 +73,7 @@ class VoxelHandler:
         self.ray_cast()
 
     def ray_cast(self):
-        # start point
         x1, y1, z1 = self.app.player.position
-        # end point
         x2, y2, z2 = self.app.player.position + self.app.player.forward * MAX_RAY_DIST
 
         current_voxel_pos = glm.ivec3(x1, y1, z1)
