@@ -39,12 +39,12 @@ class VoxelEngine:
         self.scene = Scene(self)
 
     def update(self):
+        self.delta_time = self.clock.tick() * 0.001
+        self.time = pg.time.get_ticks() * 0.001
+
         self.player.update()
         self.shader_program.update()
         self.scene.update()
-
-        self.delta_time = self.clock.tick()
-        self.time = pg.time.get_ticks() * 0.001
         pg.display.set_caption(f'{self.clock.get_fps() :.0f}')
 
     def render(self):

@@ -1,6 +1,7 @@
 from settings import *
 import moderngl as mgl
 from world import World
+from terrain_gen import get_height
 from world_objects.voxel_marker import VoxelMarker
 from world_objects.water import Water
 from world_objects.clouds import Clouds
@@ -9,6 +10,8 @@ class Scene:
     def __init__(self, app):
         self.app = app
         self.world = World(self.app)
+        spawn_y = get_height(int(CENTER_XZ), int(CENTER_XZ)) + 14
+        self.app.player.position = glm.vec3(CENTER_XZ, spawn_y, CENTER_XZ)
         self.voxel_marker = VoxelMarker(self.world.voxel_handler)
         self.water = Water(app)
         self.clouds = Clouds(app)
