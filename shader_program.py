@@ -17,16 +17,18 @@ class ShaderProgram:
         self.chunk['m_model'].write(glm.mat4())
         self.chunk['u_texture_array_0'] = 1
         self.chunk['bg_color'].write(BG_COLOR)
-        self.chunk['water_line'] = WATER_LINE
+        self.chunk['underwater_color'].write(UNDERWATER_FOG_COLOR)
+        self.chunk['underwater'] = 0
+        self.chunk['underwater_fog_density'] = UNDERWATER_FOG_DENSITY
 
         self.voxel_marker['m_proj'].write(self.player.m_proj)
         self.voxel_marker['m_model'].write(glm.mat4())
         self.voxel_marker['u_texture_0'] = 0
 
         self.water['m_proj'].write(self.player.m_proj)
+        self.water['m_view'].write(self.player.m_view)
         self.water['u_texture_0'] = 2
-        self.water['water_area'] = WATER_AREA
-        self.water['water_line'] = WATER_LINE
+        self.water['u_time'] = 0.0
 
         self.clouds['m_proj'].write(self.player.m_proj)
         self.clouds['center'] = CENTER_XZ
@@ -35,8 +37,10 @@ class ShaderProgram:
 
     def update(self):
         self.chunk['m_view'].write(self.player.m_view)
+        self.chunk['underwater'] = 1 if self.player.get_water_state() == 2 else 0
         self.voxel_marker['m_view'].write(self.player.m_view)
         self.water['m_view'].write(self.player.m_view)
+        self.water['u_time'] = self.app.time
         self.clouds['m_view'].write(self.player.m_view)
 
     def get_program(self, shader_name):

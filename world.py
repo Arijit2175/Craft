@@ -1,5 +1,6 @@
 from settings import *
 from world_objects.chunk import Chunk
+from terrain_gen import get_height
 from voxel_handler import VoxelHandler
 
 class World:
@@ -13,6 +14,9 @@ class World:
 
     def update(self):
         self.voxel_handler.update()
+
+    def is_water_body_at(self, x, z):
+        return get_height(int(x), int(z)) < WATER_LINE
 
     def build_chunks(self):
         for x in range(WORLD_W):

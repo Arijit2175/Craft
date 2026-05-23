@@ -13,7 +13,7 @@ class Scene:
         spawn_y = get_height(int(CENTER_XZ), int(CENTER_XZ)) + 14
         self.app.player.position = glm.vec3(CENTER_XZ, spawn_y, CENTER_XZ)
         self.voxel_marker = VoxelMarker(self.world.voxel_handler)
-        self.water = Water(app)
+        self.water = Water(self.world)
         self.clouds = Clouds(app)
 
     def update(self):

@@ -9,6 +9,7 @@ class Player(Camera):
     GRAVITY = -25.0
     JUMP_SPEED = 8.0
     COLLISION_STEP = 0.15
+    WATER_STEP_HEIGHT = 0.85
 
     def __init__(self, app, position=PLAYER_POS, yaw=-90, pitch=0):
         self.app = app
@@ -19,9 +20,10 @@ class Player(Camera):
 
     def update(self):
         was_on_ground = self.on_ground
+        water_state = self.get_water_state()
         self.on_ground = False
-        self.keyboard_control(was_on_ground)
-        self.apply_gravity()
+        self.keyboard_control(was_on_ground, water_state)
+        self.apply_gravity(water_state)
         self.move_and_collide(self.velocity.x * self.app.delta_time, 0)
         self.move_and_collide(self.velocity.z * self.app.delta_time, 2)
         self.move_and_collide(self.velocity.y * self.app.delta_time, 1)
@@ -43,10 +45,17 @@ class Player(Camera):
         if mouse_dy:
             self.rotate_pitch(delta_y=mouse_dy * MOUSE_SENSITIVITY)
 
-    def keyboard_control(self, was_on_ground):
+    def keyboard_control(self, was_on_ground, water_state):
         key_state = pg.key.get_pressed()
         move_dir = glm.vec3(0, 0, 0)
-        speed = PLAYER_SPEED * (PLAYER_SPRINT_MULT if key_state[pg.K_LSHIFT] or key_state[pg.K_RSHIFT] else 1.0)
+        sprint = PLAYER_SPRINT_MULT if key_state[pg.K_LSHIFT] or key_state[pg.K_RSHIFT] else 1.0
+        water_mult = 1.0
+        if water_state == 1:
+            water_mult = WATER_WALK_MULT
+        elif water_state == 2:
+            water_mult = WATER_SWIM_MULT
+
+        speed = PLAYER_SPEED * sprint * water_mult
 
         if key_state[pg.K_w]:
             move_dir += self.forward
@@ -65,18 +74,42 @@ class Player(Camera):
         self.velocity.z = move_dir.z
 
         jump_pressed = key_state[pg.K_SPACE]
-        if jump_pressed and not self.jump_was_pressed and was_on_ground:
+        dive_pressed = key_state[pg.K_LALT]
+        if water_state == 2:
+            if dive_pressed:
+                self.velocity.y = WATER_DIVE_SPEED
+            elif jump_pressed:
+                self.velocity.y = WATER_SWIM_ASCEND_SPEED
+        elif water_state == 1:
+            if dive_pressed:
+                self.velocity.y = WATER_DIVE_SPEED
+            elif jump_pressed:
+                self.velocity.y = WATER_WADE_ASCEND_SPEED
+        elif jump_pressed and not self.jump_was_pressed and was_on_ground:
             self.velocity.y = self.JUMP_SPEED
         self.jump_was_pressed = jump_pressed
 
-    def apply_gravity(self):
-        self.velocity.y += self.GRAVITY * self.app.delta_time
-        self.velocity.y = max(self.velocity.y, -50.0)
+    def apply_gravity(self, water_state):
+        if water_state == 2:
+            gravity = WATER_SWIM_GRAVITY
+            terminal_velocity = WATER_SWIM_TERMINAL
+        elif water_state == 1:
+            gravity = WATER_WADE_GRAVITY
+            terminal_velocity = WATER_WADE_TERMINAL
+        else:
+            gravity = self.GRAVITY
+            terminal_velocity = -50.0
+
+        self.velocity.y += gravity * self.app.delta_time
+        if water_state:
+            self.velocity.y *= WATER_VERTICAL_DRAG
+        self.velocity.y = max(self.velocity.y, terminal_velocity)
 
     def move_and_collide(self, amount, axis):
         if amount == 0:
             return
 
+        water_state = self.get_water_state()
         steps = max(1, int(abs(amount) / self.COLLISION_STEP) + 1)
         step_amount = amount / steps
 
@@ -90,6 +123,13 @@ class Player(Camera):
                 new_position.z += step_amount
 
             if self.collides_at(new_position):
+                if axis in (0, 2) and water_state > 0:
+                    stepped_position = glm.vec3(new_position)
+                    stepped_position.y += self.WATER_STEP_HEIGHT
+                    if not self.collides_at(stepped_position):
+                        self.position = stepped_position
+                        continue
+
                 if axis == 1 and step_amount < 0:
                     self.on_ground = True
 
@@ -136,3 +176,20 @@ class Player(Camera):
     def is_on_ground(self):
         probe = glm.vec3(self.position.x, self.position.y - 0.05, self.position.z)
         return self.collides_at(probe)
+
+    def get_water_state(self):
+        world = self.app.scene.world
+        x = int(math.floor(self.position.x))
+        z = int(math.floor(self.position.z))
+
+        if not world.is_water_body_at(x, z):
+            return 0
+
+        feet_y = self.position.y - self.PLAYER_HEIGHT * 0.9
+        head_y = self.position.y - self.PLAYER_HEIGHT * 0.15
+
+        if head_y < WATER_LINE:
+            return 2
+        if feet_y < WATER_LINE:
+            return 1
+        return 0
