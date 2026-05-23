@@ -6,6 +6,7 @@ class ShaderProgram:
         self.ctx = app.ctx
         self.player = app.player
         self.chunk = self.get_program(shader_name='chunk')
+        self.quad = self.get_program(shader_name='quad')
         self.voxel_marker = self.get_program(shader_name='voxel_marker')
         self.water = self.get_program('water')
         self.clouds = self.get_program('clouds')
