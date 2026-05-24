@@ -10,6 +10,7 @@ uniform vec3 bg_color;
 uniform vec3 underwater_color;
 uniform int underwater;
 uniform float underwater_fog_density;
+uniform float light_level;
 uniform float water_line;
 
 in vec2 uv;
@@ -27,7 +28,7 @@ void main() {
     vec3 tex_col = texture(u_texture_array_0, vec3(face_uv, voxel_id)).rgb;
     tex_col = pow(tex_col, gamma);
 
-    tex_col *= shading;
+    tex_col *= shading * light_level;
 
     //fog
     float fog_dist = gl_FragCoord.z / gl_FragCoord.w;
