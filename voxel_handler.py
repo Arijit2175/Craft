@@ -54,7 +54,7 @@ class VoxelHandler:
             self.rebuild_adj_chunk((wx, wy, wz + 1))
 
     def remove_voxel(self):
-        if self.voxel_id:
+        if self.voxel_id and self.voxel_id != BEDROCK:
             self.chunk.voxels[self.voxel_index] = 0
 
             self.chunk.mesh.rebuild()

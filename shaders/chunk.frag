@@ -30,6 +30,9 @@ void main() {
 
     tex_col *= shading * light_level;
 
+    float cave_darkness = 1.0 - smoothstep(18.0, 44.0, frag_world_pos.y);
+    tex_col *= mix(1.0, 0.42, cave_darkness);
+
     //fog
     float fog_dist = gl_FragCoord.z / gl_FragCoord.w;
     vec3 fog_color = underwater > 0 ? underwater_color : bg_color;

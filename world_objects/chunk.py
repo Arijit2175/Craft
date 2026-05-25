@@ -50,8 +50,13 @@ class Chunk:
             for z in range(CHUNK_SIZE):
                 wz = z + cz
                 world_height = get_height(wx, wz)
+                slope_height_x = get_height(wx + 6, wz)
+                slope_height_z = get_height(wx, wz + 6)
+                mountain_factor = max(0.0, min(1.0, (world_height - 49) / 24.0))
+                slope_factor = max(0.0, min(1.0, (abs(slope_height_x - world_height) + abs(slope_height_z - world_height)) / 18.0))
+                cave_mouth = get_cave_mouth_value(wx, wz) + slope_factor * 0.35
                 local_height = min(world_height - cy, CHUNK_SIZE)
 
                 for y in range(local_height):
                     wy = y + cy
-                    set_voxel_id(voxels, x, y, z, wx, wy, wz, world_height)
+                    set_voxel_id(voxels, x, y, z, wx, wy, wz, world_height, cave_mouth, mountain_factor)

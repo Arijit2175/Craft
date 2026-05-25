@@ -1,6 +1,56 @@
+from numba import njit
 from noise import noise2, noise3
 from random import random
-from settings import *
+import math
+import settings as cfg
+
+SNOW_LVL = int(cfg.SNOW_LVL)
+STONE_LVL = int(cfg.STONE_LVL)
+DIRT_LVL = int(cfg.DIRT_LVL)
+GRASS_LVL = int(cfg.GRASS_LVL)
+SAND_LVL = int(cfg.SAND_LVL)
+SAND = int(cfg.SAND)
+GRASS = int(cfg.GRASS)
+DIRT = int(cfg.DIRT)
+STONE = int(cfg.STONE)
+SNOW = int(cfg.SNOW)
+LEAVES = int(cfg.LEAVES)
+WOOD = int(cfg.WOOD)
+ROCK = int(cfg.ROCK)
+COAL_ORE = int(cfg.COAL_ORE)
+IRON_ORE = int(cfg.IRON_ORE)
+BEDROCK = int(cfg.BEDROCK)
+CENTER_XZ = int(cfg.CENTER_XZ)
+CENTER_Y = int(cfg.CENTER_Y)
+CHUNK_SIZE = int(cfg.CHUNK_SIZE)
+CHUNK_AREA = int(cfg.CHUNK_AREA)
+TREE_PROBABILITY = float(cfg.TREE_PROBABILITY)
+TREE_WIDTH = int(cfg.TREE_WIDTH)
+TREE_HEIGHT = int(cfg.TREE_HEIGHT)
+TREE_H_WIDTH = int(cfg.TREE_H_WIDTH)
+TREE_H_HEIGHT = int(cfg.TREE_H_HEIGHT)
+CAVE_SURFACE_BUFFER = float(cfg.CAVE_SURFACE_BUFFER)
+CAVE_FREQUENCY = float(cfg.CAVE_FREQUENCY)
+CAVE_THRESHOLD = float(cfg.CAVE_THRESHOLD)
+CAVE_MOUTH_FREQUENCY = float(cfg.CAVE_MOUTH_FREQUENCY)
+CAVE_MOUTH_THRESHOLD = float(cfg.CAVE_MOUTH_THRESHOLD)
+CAVE_MOUTH_DEPTH = int(cfg.CAVE_MOUTH_DEPTH)
+CAVE_MOUTH_DEPTH_BONUS = int(cfg.CAVE_MOUTH_DEPTH_BONUS)
+CAVE_MOUTH_MOUNTAIN_BONUS = float(cfg.CAVE_MOUTH_MOUNTAIN_BONUS)
+CAVE_COVER_THICKNESS = int(cfg.CAVE_COVER_THICKNESS)
+ORE_FREQUENCY = float(cfg.ORE_FREQUENCY)
+ORE_CLUSTER_FREQUENCY = float(cfg.ORE_CLUSTER_FREQUENCY)
+ORE_CLUSTER_THRESHOLD = float(cfg.ORE_CLUSTER_THRESHOLD)
+ORE_COAL_THRESHOLD = float(cfg.ORE_COAL_THRESHOLD)
+ORE_IRON_THRESHOLD = float(cfg.ORE_IRON_THRESHOLD)
+ORE_MIN_DEPTH = int(cfg.ORE_MIN_DEPTH)
+ORE_CAVE_BONUS = float(cfg.ORE_CAVE_BONUS)
+ROCK_DEPTH = int(cfg.ROCK_DEPTH)
+ROCK_FREQUENCY = float(cfg.ROCK_FREQUENCY)
+ROCK_THRESHOLD = float(cfg.ROCK_THRESHOLD)
+BEDROCK_LAYER = int(cfg.BEDROCK_LAYER)
+BASE_ROCK_LAYER = int(cfg.BASE_ROCK_LAYER)
+BASE_ROCK_LAYER = int(cfg.BASE_ROCK_LAYER)
 
 
 @njit
@@ -33,16 +83,70 @@ def get_height(x, z):
 def get_index(x, y, z):
     return x + CHUNK_SIZE * z + CHUNK_AREA * y
 
+@njit
+def get_cave_value(wx, wy, wz):
+    cave = noise3(wx * CAVE_FREQUENCY, wy * CAVE_FREQUENCY, wz * CAVE_FREQUENCY)
+    cave += 0.5 * noise3(wx * CAVE_FREQUENCY * 1.8, wy * CAVE_FREQUENCY * 1.8, wz * CAVE_FREQUENCY * 1.8)
+    return cave
 
 @njit
-def set_voxel_id(voxels, x, y, z, wx, wy, wz, world_height):
-    voxel_id = 0
+def get_cave_mouth_value(wx, wz):
+    mouth = noise2(wx * CAVE_MOUTH_FREQUENCY, wz * CAVE_MOUTH_FREQUENCY)
+    mouth += 0.42 * noise2(wx * CAVE_MOUTH_FREQUENCY * 2.11, wz * CAVE_MOUTH_FREQUENCY * 2.11)
+    return mouth
+
+
+@njit
+def get_rock_value(wx, wy, wz):
+    rock = noise3(wx * ROCK_FREQUENCY, wy * ROCK_FREQUENCY, wz * ROCK_FREQUENCY)
+    rock += 0.4 * noise3(wx * ROCK_FREQUENCY * 2.1, wy * ROCK_FREQUENCY * 2.1, wz * ROCK_FREQUENCY * 2.1)
+    return rock
+
+@njit
+def get_ore_value(wx, wy, wz):
+    return noise3(wx * ORE_FREQUENCY, wy * ORE_FREQUENCY, wz * ORE_FREQUENCY)
+
+
+@njit
+def get_ore_cluster_value(wx, wy, wz):
+    cluster = noise3(wx * ORE_CLUSTER_FREQUENCY, wy * ORE_CLUSTER_FREQUENCY, wz * ORE_CLUSTER_FREQUENCY)
+    cluster += 0.45 * noise3(wx * ORE_CLUSTER_FREQUENCY * 1.87, wy * ORE_CLUSTER_FREQUENCY * 1.87, wz * ORE_CLUSTER_FREQUENCY * 1.87)
+    return cluster
+
+@njit
+def set_voxel_id(voxels, x, y, z, wx, wy, wz, world_height, cave_mouth, mountain_factor):
+    voxel_id = BEDROCK if wy <= BEDROCK_LAYER else ROCK if wy <= BASE_ROCK_LAYER else 0
+
+    if voxel_id:
+        voxels[get_index(x, y, z)] = voxel_id
+        return
 
     if wy < world_height - 1:
-        if (noise3(wx * 0.09, wy * 0.09, wz * 0.09) > 0 and
-                noise2(wx * 0.1, wz * 0.1) * 3 + 3 < wy < world_height - 10):
-            voxel_id = 0
+        depth = world_height - wy
+        cave_value = get_cave_value(wx, wy, wz)
+        cave_depth_limit = CAVE_MOUTH_DEPTH + int(mountain_factor * CAVE_MOUTH_DEPTH_BONUS)
+        cave_threshold = CAVE_MOUTH_THRESHOLD - mountain_factor * CAVE_MOUTH_MOUNTAIN_BONUS
+        near_surface_cave = cave_mouth > cave_threshold and depth <= cave_depth_limit
+        cave_body_threshold = CAVE_THRESHOLD - mountain_factor * 0.08
+        depth_falloff = 1.0 - min(1.0, depth / max(cave_depth_limit, 1))
+        cave_profile = cave_value + depth_falloff * (0.55 + mountain_factor * 0.18)
 
+        if depth > CAVE_SURFACE_BUFFER and depth > CAVE_COVER_THICKNESS and cave_profile > cave_body_threshold:
+            voxel_id = 0
+        elif depth > ROCK_DEPTH:
+            voxel_id = ROCK if get_rock_value(wx, wy, wz) > ROCK_THRESHOLD else STONE
+
+            ore_cluster = get_ore_cluster_value(wx, wy, wz)
+            ore_value = get_ore_value(wx, wy, wz) + ore_cluster * 0.35
+            ore_bonus = ORE_CAVE_BONUS if abs(cave_profile - cave_body_threshold) < 0.18 else 0.0
+            if depth > ORE_MIN_DEPTH and ore_cluster > ORE_CLUSTER_THRESHOLD - ore_bonus:
+                if ore_value > ORE_COAL_THRESHOLD - ore_bonus:
+                    voxel_id = COAL_ORE
+                elif ore_value < -ORE_IRON_THRESHOLD + ore_bonus:
+                    voxel_id = IRON_ORE
+
+            if voxel_id == STONE and cave_profile > cave_body_threshold and ore_cluster > ORE_CLUSTER_THRESHOLD - 0.08:
+                voxel_id = ROCK
         else:
             voxel_id = STONE
     else:
