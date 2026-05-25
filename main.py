@@ -6,9 +6,11 @@ from shader_program import ShaderProgram
 from scene import Scene
 from player import Player
 from textures import Textures
+from sounds import play_background_music
 
 class VoxelEngine:
     def __init__(self):
+        pg.mixer.pre_init(44100, -16, 2, 512)
         pg.init()
         pg.display.gl_set_attribute(pg.GL_CONTEXT_MAJOR_VERSION, MAJOR_VER)
         pg.display.gl_set_attribute(pg.GL_CONTEXT_MINOR_VERSION, MINOR_VER)
@@ -18,6 +20,12 @@ class VoxelEngine:
 
         pg.display.set_mode(WIN_RES, flags=pg.OPENGL | pg.DOUBLEBUF)
         self.ctx = mgl.create_context()
+
+        try:
+            if not pg.mixer.get_init():
+                pg.mixer.init()
+        except pg.error:
+            pass
 
         self.ctx.enable(flags=mgl.DEPTH_TEST | mgl.CULL_FACE | mgl.BLEND)
         self.ctx.gc_mode = 'auto'
@@ -35,6 +43,9 @@ class VoxelEngine:
     def on_init(self):
         self.textures = Textures(self)
         self.player = Player(self)
+        from sounds import MovementAudio
+        self.movement_audio = MovementAudio(self)
+        play_background_music()
         self.shader_program = ShaderProgram(self)
         self.scene = Scene(self)
 

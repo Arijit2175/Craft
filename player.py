@@ -16,11 +16,14 @@ class Player(Camera):
         self.velocity = glm.vec3(0, 0, 0)
         self.on_ground = False
         self.jump_was_pressed = False
+        self.is_sprinting = False
+        self.movement_input_active = False
         super().__init__(position, yaw, pitch)
 
     def update(self):
         was_on_ground = self.on_ground
         water_state = self.get_water_state()
+        pre_move_vertical_velocity = self.velocity.y
         self.on_ground = False
         self.keyboard_control(was_on_ground, water_state)
         self.apply_gravity(water_state)
@@ -29,6 +32,8 @@ class Player(Camera):
         self.move_and_collide(self.velocity.y * self.app.delta_time, 1)
         self.mouse_control()
         super().update()
+        if hasattr(self.app, 'movement_audio'):
+            self.app.movement_audio.update(self, self.app.delta_time, was_on_ground, pre_move_vertical_velocity, self.movement_input_active)
 
     def handle_event(self, event):
         if event.type == pg.MOUSEBUTTONDOWN:
@@ -49,6 +54,8 @@ class Player(Camera):
         key_state = pg.key.get_pressed()
         move_dir = glm.vec3(0, 0, 0)
         sprint = PLAYER_SPRINT_MULT if key_state[pg.K_LSHIFT] or key_state[pg.K_RSHIFT] else 1.0
+        self.is_sprinting = sprint > 1.0
+        movement_input_active = False
         water_mult = 1.0
         if water_state == 1:
             water_mult = WATER_WALK_MULT
@@ -59,12 +66,16 @@ class Player(Camera):
 
         if key_state[pg.K_w]:
             move_dir += self.forward
+            movement_input_active = True
         if key_state[pg.K_s]:
             move_dir -= self.forward
+            movement_input_active = True
         if key_state[pg.K_d]:
             move_dir += self.right
+            movement_input_active = True
         if key_state[pg.K_a]:
             move_dir -= self.right
+            movement_input_active = True
 
         move_dir.y = 0
         if glm.length(move_dir) > 0:
@@ -78,16 +89,21 @@ class Player(Camera):
         if water_state == 2:
             if dive_pressed:
                 self.velocity.y = WATER_DIVE_SPEED
+                movement_input_active = True
             elif jump_pressed:
                 self.velocity.y = WATER_SWIM_ASCEND_SPEED
+                movement_input_active = True
         elif water_state == 1:
             if dive_pressed:
                 self.velocity.y = WATER_DIVE_SPEED
+                movement_input_active = True
             elif jump_pressed:
                 self.velocity.y = WATER_WADE_ASCEND_SPEED
+                movement_input_active = True
         elif jump_pressed and not self.jump_was_pressed and was_on_ground:
             self.velocity.y = self.JUMP_SPEED
         self.jump_was_pressed = jump_pressed
+        self.movement_input_active = movement_input_active
 
     def apply_gravity(self, water_state):
         if water_state == 2:
