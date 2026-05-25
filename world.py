@@ -12,6 +12,10 @@ class World:
         self.build_chunk_mesh()
         self.voxel_handler = VoxelHandler(self)
 
+    def _report_loading(self, progress, detail):
+        if hasattr(self.app, 'loading_screen') and self.app.loading_screen:
+            self.app.loading_screen.draw(progress, 'Generating world', detail)
+
     def update(self):
         self.voxel_handler.update()
 
@@ -19,6 +23,8 @@ class World:
         return get_height(int(x), int(z)) < WATER_LINE
 
     def build_chunks(self):
+        total = WORLD_VOL
+        built = 0
         for x in range(WORLD_W):
             for y in range(WORLD_H):
                 for z in range(WORLD_D):
@@ -31,9 +37,18 @@ class World:
 
                     chunk.voxels = self.voxels[chunk_index]
 
+                    built += 1
+                    if built % 12 == 0 or built == total:
+                        progress = 0.35 + 0.40 * (built / total)
+                        self._report_loading(progress, 'Building terrain')
+
     def build_chunk_mesh(self):
-        for chunk in self.chunks:
+        total = len(self.chunks)
+        for index, chunk in enumerate(self.chunks, start=1):
             chunk.build_mesh()
+            if index % 12 == 0 or index == total:
+                progress = 0.75 + 0.23 * (index / total)
+                self._report_loading(progress, 'Uploading chunk meshes')
 
     def render(self):
         for chunk in self.chunks:

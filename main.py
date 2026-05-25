@@ -7,6 +7,7 @@ from scene import Scene
 from player import Player
 from textures import Textures
 from sounds import play_background_music
+from loading_screen import LoadingScreen
 
 class VoxelEngine:
     def __init__(self):
@@ -20,6 +21,8 @@ class VoxelEngine:
 
         pg.display.set_mode(WIN_RES, flags=pg.OPENGL | pg.DOUBLEBUF)
         self.ctx = mgl.create_context()
+        self.loading_screen = LoadingScreen(self)
+        self.loading_screen.draw(0.03, 'Generating world', 'Initializing engine')
 
         try:
             if not pg.mixer.get_init():
@@ -41,13 +44,24 @@ class VoxelEngine:
         self.on_init()
 
     def on_init(self):
+        self.loading_screen.draw(0.10, 'Generating world', 'Loading textures')
         self.textures = Textures(self)
+
+        self.loading_screen.draw(0.18, 'Generating world', 'Preparing player')
         self.player = Player(self)
+
+        self.loading_screen.draw(0.24, 'Generating world', 'Loading audio')
         from sounds import MovementAudio
         self.movement_audio = MovementAudio(self)
         play_background_music()
+
+        self.loading_screen.draw(0.30, 'Generating world', 'Compiling shaders')
         self.shader_program = ShaderProgram(self)
+
+        self.loading_screen.draw(0.35, 'Generating world', 'Building terrain')
         self.scene = Scene(self)
+        self.loading_screen.draw(1.0, 'Generating world', 'Done')
+        self.loading_screen = None
 
     def update(self):
         self.delta_time = self.clock.tick() * 0.001
