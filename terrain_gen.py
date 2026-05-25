@@ -15,6 +15,7 @@ DIRT = int(cfg.DIRT)
 STONE = int(cfg.STONE)
 SNOW = int(cfg.SNOW)
 LEAVES = int(cfg.LEAVES)
+ALT_LEAVES = int(cfg.ALT_LEAVES)
 WOOD = int(cfg.WOOD)
 ROCK = int(cfg.ROCK)
 COAL_ORE = int(cfg.COAL_ORE)
@@ -25,6 +26,7 @@ CENTER_Y = int(cfg.CENTER_Y)
 CHUNK_SIZE = int(cfg.CHUNK_SIZE)
 CHUNK_AREA = int(cfg.CHUNK_AREA)
 TREE_PROBABILITY = float(cfg.TREE_PROBABILITY)
+CHERRY_LEAF_VARIANT_CHANCE = float(cfg.CHERRY_LEAF_VARIANT_CHANCE)
 TREE_WIDTH = int(cfg.TREE_WIDTH)
 TREE_HEIGHT = int(cfg.TREE_HEIGHT)
 TREE_H_WIDTH = int(cfg.TREE_H_WIDTH)
@@ -186,6 +188,7 @@ def place_tree(voxels, x, y, z, voxel_id):
         return None
 
     voxels[get_index(x, y, z)] = DIRT
+    leaf_id = ALT_LEAVES if random() < CHERRY_LEAF_VARIANT_CHANCE else LEAVES
 
     m = 0
     for n, iy in enumerate(range(TREE_H_HEIGHT, TREE_HEIGHT - 1)):
@@ -194,10 +197,10 @@ def place_tree(voxels, x, y, z, voxel_id):
         for ix in range(-TREE_H_WIDTH + m, TREE_H_WIDTH - m * rng):
             for iz in range(-TREE_H_WIDTH + m * rng, TREE_H_WIDTH - m):
                 if (ix + iz) % 4:
-                    voxels[get_index(x + ix + k, y + iy, z + iz + k)] = LEAVES
+                    voxels[get_index(x + ix + k, y + iy, z + iz + k)] = leaf_id
         m += 1 if n > 0 else 3 if n > 1 else 0
 
     for iy in range(1, TREE_HEIGHT - 2):
         voxels[get_index(x, y + iy, z)] = WOOD
 
-    voxels[get_index(x, y + TREE_HEIGHT - 2, z)] = LEAVES
+    voxels[get_index(x, y + TREE_HEIGHT - 2, z)] = leaf_id
