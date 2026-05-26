@@ -71,3 +71,15 @@ A custom-built **procedural voxel engine** developed in Python featuring terrain
 
 ---
 
+## 🎯 Goal of the Project
+
+This project was created for learning and experimentation in:
+
+- **Procedural terrain generation**
+- **Voxel world and environment design**
+- **Shader-based lighting and rendering**
+- **HUD and block interaction systems**
+- **Audio feedback and movement effects**
+
+---
+
