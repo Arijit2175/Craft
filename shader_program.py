@@ -28,7 +28,10 @@ class ShaderProgram:
 
         self.voxel_marker['m_proj'].write(self.player.m_proj)
         self.voxel_marker['m_model'].write(glm.mat4())
-        self.voxel_marker['u_texture_0'] = 0
+        try:
+            self.voxel_marker['u_texture_0'] = 0
+        except KeyError:
+            pass
 
         self.water['m_proj'].write(self.player.m_proj)
         self.water['m_view'].write(self.player.m_view)
@@ -48,7 +51,6 @@ class ShaderProgram:
         self.sky['night_color'].write(NIGHT_SKY_COLOR)
         self.sky['dawn_color'].write(DAWN_SKY_COLOR)
 
-        # HUD texture array (same as chunk textures)
         try:
             self.hud['u_texture_array_0'] = 1
         except Exception:
