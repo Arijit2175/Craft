@@ -4,4 +4,46 @@ A custom-built **procedural voxel engine** developed in Python featuring terrain
 
 ---
 
+## ✨ Features
 
+### 🌱 Procedural Terrain Generation
+- Voxel terrain generation
+- Noise-based world creation
+- Smooth terrain variation
+
+### 🌎 Multiple Biomes
+- Forests 🌲
+- Deserts 🏜️
+- Snow Biomes ❄️
+- Plains 🌿
+
+### 🌳 Nature Generation
+- Procedurally generated trees
+- Natural terrain decoration
+- Water bodies & lakes
+
+### 🌊 Water Physics
+- Dynamic water interaction
+- Water bodies integrated into terrain
+- Swimming mechanics
+
+### ⛏️ Block Interaction
+- Break blocks
+- Place blocks
+- Real-time terrain modification
+
+### 🧍 Player Physics
+- Gravity
+- Collision detection
+- Smooth movement system
+
+### 🌙 Day & Night Cycle
+- Dynamic lighting transitions
+- Real-time sky changes
+- Atmospheric environment
+
+### 🕳️ Cave Generation
+- Procedurally generated cave systems
+- Underground exploration
+
+---
