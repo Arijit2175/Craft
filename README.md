@@ -105,3 +105,31 @@ while exploring custom procedural generation and voxel engine mechanics from scr
 
 ---
 
+## 📚 References & Resources
+
+### Video References
+
+- https://www.youtube.com/watch?v=Ab8TOSFfNp4  *(Voxel Engine Tutorial Series)*
+
+- https://www.youtube.com/watch?v=M3iI2l0ltbE  *(Perlin Noise Explained)*
+
+- https://www.youtube.com/watch?v=CSa5O6knuwI  *(OpenGL Voxel Rendering Concepts)*
+
+- https://www.youtube.com/watch?v=8ptH79R53c0  *(Chunk Generation & Optimization)*
+
+### Documentation & Learning Resources
+
+- https://www.opengl.org/documentation/  *(Official OpenGL Documentation)*
+
+- https://pyopengl.sourceforge.net/documentation/  *(PyOpenGL Documentation)*
+
+- https://www.pygame.org/docs/  *(Pygame Documentation)*
+
+- https://learnopengl.com/  *(Learn OpenGL - Graphics Programming Guide)*
+
+- https://docs.python.org/3/  *(Official Python Documentation)*
+
+- https://ephtracy.github.io/  *(MagicaVoxel Official Website)*
+
+<br>
+
