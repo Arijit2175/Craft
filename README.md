@@ -57,3 +57,17 @@ A custom-built **procedural voxel engine** developed in Python featuring terrain
 
 ---
 
+## 🎮 Controls
+
+| Key           | Action      |
+| ------------- | ----------- |
+| `W A S D`     | Move        |
+| `Space`       | Jump        |
+| `Mouse`       | Look Around |
+| `Left Shift`  | Sprint      |
+| `Left Alt`    | Go deeper in water|
+| `Left Click`  | Break/Place Block |
+| `Right Click` | Change block interaction |
+
+---
+
