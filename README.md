@@ -83,3 +83,11 @@ This project was created for learning and experimentation in:
 
 ---
 
+## 🔍 Preview
+
+Here's a preview of the engine: 
+
+![Screenshot1](assets/screenshot.png)
+
+---
+
