@@ -91,3 +91,17 @@ Here's a preview of the engine:
 
 ---
 
+## 💡 Inspiration
+
+Inspired by sandbox voxel games like:
+
+```
+Minecraft
+Minetest
+Terraria
+```
+
+while exploring custom procedural generation and voxel engine mechanics from scratch.
+
+---
+
