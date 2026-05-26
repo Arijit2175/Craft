@@ -47,3 +47,13 @@ A custom-built **procedural voxel engine** developed in Python featuring terrain
 - Underground exploration
 
 ---
+
+## 🛠️ Tech Stack
+
+- **Python**
+- **OpenGL**
+- **Pygame**
+- **Procedural Noise Algorithms**
+
+---
+
