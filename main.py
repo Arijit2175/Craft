@@ -64,7 +64,7 @@ class VoxelEngine:
         self.loading_screen = None
 
     def update(self):
-        self.delta_time = self.clock.tick() * 0.001
+        self.delta_time = self.clock.tick(MAX_FPS) * 0.001
         self.time = pg.time.get_ticks() * 0.001
 
         self.player.update()

@@ -27,9 +27,9 @@ class Player(Camera):
         self.on_ground = False
         self.keyboard_control(was_on_ground, water_state)
         self.apply_gravity(water_state)
-        self.move_and_collide(self.velocity.x * self.app.delta_time, 0)
-        self.move_and_collide(self.velocity.z * self.app.delta_time, 2)
-        self.move_and_collide(self.velocity.y * self.app.delta_time, 1)
+        self.move_and_collide(self.velocity.x * self.app.delta_time, 0, water_state)
+        self.move_and_collide(self.velocity.z * self.app.delta_time, 2, water_state)
+        self.move_and_collide(self.velocity.y * self.app.delta_time, 1, water_state)
         self.mouse_control()
         super().update()
         if hasattr(self.app, 'movement_audio'):
@@ -136,11 +136,10 @@ class Player(Camera):
             self.velocity.y *= WATER_VERTICAL_DRAG
         self.velocity.y = max(self.velocity.y, terminal_velocity)
 
-    def move_and_collide(self, amount, axis):
+    def move_and_collide(self, amount, axis, water_state):
         if amount == 0:
             return
 
-        water_state = self.get_water_state()
         steps = max(1, int(abs(amount) / self.COLLISION_STEP) + 1)
         step_amount = amount / steps
 

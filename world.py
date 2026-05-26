@@ -51,5 +51,26 @@ class World:
                 self._report_loading(progress, 'Uploading chunk meshes')
 
     def render(self):
-        for chunk in self.chunks:
-            chunk.render()
+        player_pos = self.app.player.position
+        player_chunk_x = int(player_pos.x) // CHUNK_SIZE
+        player_chunk_z = int(player_pos.z) // CHUNK_SIZE
+
+        x0 = max(0, player_chunk_x - CHUNK_RENDER_RADIUS)
+        x1 = min(WORLD_W - 1, player_chunk_x + CHUNK_RENDER_RADIUS)
+        z0 = max(0, player_chunk_z - CHUNK_RENDER_RADIUS)
+        z1 = min(WORLD_D - 1, player_chunk_z + CHUNK_RENDER_RADIUS)
+
+        is_on_frustum = self.app.player.frustum.is_on_frustum
+        for y in range(WORLD_H):
+            for z in range(z0, z1 + 1):
+                for x in range(x0, x1 + 1):
+                    chunk_index = x + WORLD_W * z + WORLD_AREA * y
+                    chunk = self.chunks[chunk_index]
+
+                    if chunk.is_empty:
+                        continue
+                    if not is_on_frustum(chunk):
+                        continue
+
+                    chunk.set_uniform()
+                    chunk.mesh.render()
