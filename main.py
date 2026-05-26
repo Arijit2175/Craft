@@ -19,7 +19,10 @@ class VoxelEngine:
         pg.display.gl_set_attribute(pg.GL_DEPTH_SIZE, DEPTH_SIZE)
         pg.display.gl_set_attribute(pg.GL_MULTISAMPLESAMPLES, NUM_SAMPLES)
 
-        pg.display.set_mode(WIN_RES, flags=pg.OPENGL | pg.DOUBLEBUF)
+        window_flags = pg.OPENGL | pg.DOUBLEBUF
+        if FULLSCREEN:
+            window_flags |= pg.FULLSCREEN
+        pg.display.set_mode(WIN_RES, flags=window_flags)
         self.ctx = mgl.create_context()
         self.loading_screen = LoadingScreen(self)
         self.loading_screen.draw(0.03, 'Generating world', 'Initializing engine')

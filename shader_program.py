@@ -1,4 +1,5 @@
 from settings import *
+from resource_utils import resource_path
 
 class ShaderProgram:
     def __init__(self, app):
@@ -75,10 +76,10 @@ class ShaderProgram:
         self.sky['sky_color'].write(scene.sky_color)
 
     def get_program(self, shader_name):
-        with open(f'shaders/{shader_name}.vert') as file:
+        with open(resource_path(f'shaders/{shader_name}.vert')) as file:
             vertex_shader = file.read()
 
-        with open(f'shaders/{shader_name}.frag') as file:
+        with open(resource_path(f'shaders/{shader_name}.frag')) as file:
             fragment_shader = file.read()
 
         program = self.ctx.program(vertex_shader=vertex_shader, fragment_shader=fragment_shader)

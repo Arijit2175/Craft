@@ -3,6 +3,7 @@ import moderngl as mgl
 import pygame as pg
 import numpy as np
 import os
+from resource_utils import resource_path
 
 class LoadingScreen:
     def __init__(self, app):
@@ -43,12 +44,12 @@ void main() {
         self.title_program['u_text'] = 0
 
         pixelify_candidates = (
-            'assets/font/static/PixelifySans-Bold.ttf',
-            'assets/font/PixelifySans-VariableFont_wght.ttf',
-            'assets/font/static/PixelifySans-SemiBold.ttf',
-            'assets/font/static/PixelifySans-Regular.ttf',
-            'assets/PixelifySans-Regular.ttf',
-            'assets/PixelifySans-VariableFont_wght.ttf',
+            resource_path('assets/font/static/PixelifySans-Bold.ttf'),
+            resource_path('assets/font/PixelifySans-VariableFont_wght.ttf'),
+            resource_path('assets/font/static/PixelifySans-SemiBold.ttf'),
+            resource_path('assets/font/static/PixelifySans-Regular.ttf'),
+            resource_path('assets/PixelifySans-Regular.ttf'),
+            resource_path('assets/PixelifySans-VariableFont_wght.ttf'),
         )
         pixelify_path = next((path for path in pixelify_candidates if os.path.exists(path)), None)
         if pixelify_path:

@@ -2,6 +2,7 @@ import pygame as pg
 import moderngl as mgl
 import os
 from settings import LEAVES, CHERRY_ALT_LEAVES_TEXTURE
+from resource_utils import resource_path
 
 class Textures:
     def __init__(self, app):
@@ -17,7 +18,7 @@ class Textures:
         self.texture_1.use(location=2)
 
     def load(self, file_name, is_tex_array=False):
-        texture = pg.image.load(f'assets/{file_name}').convert_alpha()
+        texture = pg.image.load(resource_path(f'assets/{file_name}')).convert_alpha()
         texture = pg.transform.flip(texture, flip_x=True, flip_y=False)
 
         if is_tex_array:
@@ -59,7 +60,7 @@ class Textures:
         tile_size = layer_height
 
         for file_name in ('rock.jpg', 'coal.jpeg', 'iron.jpeg', 'bedrock.png'):
-            source = pg.image.load(f'assets/{file_name}').convert_alpha()
+            source = pg.image.load(resource_path(f'assets/{file_name}')).convert_alpha()
             source = pg.transform.flip(source, flip_x=True, flip_y=False)
             source = pg.transform.smoothscale(source, (tile_size, tile_size))
 
@@ -71,7 +72,7 @@ class Textures:
 
         # Add an alternate leaves layer for cherry-tree variety.
         # If the user texture is not present yet, reuse the existing leaves layer.
-        alt_path = f'assets/{CHERRY_ALT_LEAVES_TEXTURE}'
+        alt_path = resource_path(f'assets/{CHERRY_ALT_LEAVES_TEXTURE}')
         if os.path.exists(alt_path):
             source = pg.image.load(alt_path).convert_alpha()
             source = pg.transform.flip(source, flip_x=True, flip_y=False)

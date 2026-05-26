@@ -9,6 +9,7 @@ NUM_SAMPLES = 1
 
 WIN_RES = glm.vec2(1600, 900)
 MAX_FPS = 120
+FULLSCREEN = True
 
 SEED = 16
 

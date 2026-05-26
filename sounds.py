@@ -2,6 +2,7 @@ import pygame as pg
 import math
 import glm
 from settings import *
+from resource_utils import resource_path
 
 class MovementAudio:
     LOOP_FADE_MS = 140
@@ -30,7 +31,7 @@ class MovementAudio:
             self.land_channel = pg.mixer.Channel(2)
 
     def load(self, file_name, volume):
-        sound = pg.mixer.Sound(f'assets/{file_name}')
+        sound = pg.mixer.Sound(resource_path(f'assets/{file_name}'))
         sound.set_volume(volume)
         return sound
 
@@ -150,7 +151,7 @@ def play_background_music(file_name='bg_music.ogg', volume=0.18):
         return
 
     try:
-        pg.mixer.music.load(f'assets/{file_name}')
+        pg.mixer.music.load(resource_path(f'assets/{file_name}'))
         pg.mixer.music.set_volume(volume)
         pg.mixer.music.play(-1)
     except pg.error:
