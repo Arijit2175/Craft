@@ -1,6 +1,5 @@
 from meshes.crosshair_mesh import CrosshairMesh
 
-
 class Crosshair:
     def __init__(self, app):
         self.app = app

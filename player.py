@@ -43,6 +43,21 @@ class Player(Camera):
             if event.button == 3:
                 voxel_handler.switch_mode()
 
+        if event.type == pg.KEYDOWN:
+            try:
+                hud = self.app.scene.hud_inventory
+            except Exception:
+                hud = None
+            if event.key == pg.K_1:
+                if hud:
+                    hud.set_selected(0)
+            elif event.key == pg.K_2:
+                if hud:
+                    hud.set_selected(1)
+            elif event.key == pg.K_3:
+                if hud:
+                    hud.set_selected(2)
+
     def mouse_control(self):
         mouse_dx, mouse_dy = pg.mouse.get_rel()
         if mouse_dx:

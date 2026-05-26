@@ -7,6 +7,8 @@ class ShaderProgram:
         self.player = app.player
         self.chunk = self.get_program(shader_name='chunk')
         self.quad = self.get_program(shader_name='quad')
+        self.hud = self.get_program(shader_name='hud')
+        self.hud_color = self.get_program(shader_name='hud_color')
         self.sky = self.get_program(shader_name='sky')
         self.crosshair = self.get_program(shader_name='crosshair')
         self.voxel_marker = self.get_program(shader_name='voxel_marker')
@@ -45,6 +47,12 @@ class ShaderProgram:
         self.sky['sky_color'].write(BG_COLOR)
         self.sky['night_color'].write(NIGHT_SKY_COLOR)
         self.sky['dawn_color'].write(DAWN_SKY_COLOR)
+
+        # HUD texture array (same as chunk textures)
+        try:
+            self.hud['u_texture_array_0'] = 1
+        except Exception:
+            pass
 
     def update(self):
         scene = self.app.scene

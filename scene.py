@@ -8,6 +8,7 @@ from world_objects.water import Water
 from world_objects.clouds import Clouds
 from world_objects.crosshair import Crosshair
 from world_objects.sky import Sky
+from world_objects.hud_inventory import HudInventory
 
 class Scene:
     def __init__(self, app):
@@ -23,6 +24,7 @@ class Scene:
         self.water = Water(self.world)
         self.clouds = Clouds(app)
         self.crosshair = Crosshair(app)
+        self.hud_inventory = HudInventory(app)
 
     def update_day_night(self):
         self.time_of_day = (self.app.time / DAY_NIGHT_CYCLE_SECONDS + DAY_NIGHT_START_OFFSET) % 1.0
@@ -64,4 +66,5 @@ class Scene:
 
         self.app.ctx.disable(mgl.DEPTH_TEST)
         self.crosshair.render()
+        self.hud_inventory.render()
         self.app.ctx.enable(mgl.DEPTH_TEST)
